@@ -6,22 +6,26 @@ const getAll = () => {
   return result
 }
 
-const getById =async id => {
+const getById = async id => {
   // DO YOUR MAGIC
-  const result = await db('accounts').where('id',id).first()
+  const result = await db('accounts').where('id', id).first()
   return result
 }
 
-const create = account => {
-  // DO YOUR MAGIC
+const create = async account => {
+  const [id] = await db('accounts').insert(account)
+  return getById(id)
 }
 
 const updateById = (id, account) => {
   // DO YOUR MAGIC
 }
 
-const deleteById = id => {
+const deleteById = async id => {
   // DO YOUR MAGIC
+  const accountDeleted = getById(id)
+  await db('accounts').del().where('id', id)
+  return accountDeleted
 }
 
 module.exports = {

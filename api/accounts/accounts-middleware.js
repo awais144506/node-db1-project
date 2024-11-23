@@ -1,12 +1,15 @@
 const Account = require('./accounts-model')
 const db = require("../../data/db-config")
 exports.checkAccountPayload =  (req, res, next) => {
-  const error = { status: 400 }
+  const errorMessage = { status: 400 }
   const { name, budget } = req.body
 console.log(name,budget)
-  if (!name||!budget||name === undefined || budget === undefined) error.message = 'name and budget are required';
-  if (error.message) {
-    next(error)
+  if (name===undefined || budget === undefined) errorMessage.message = 'name and budget are required';
+  else if(name.trim().length<3||name.trim().length>100) errorMessage.message = 'name of account must be between 3 and 100';
+  else if(isNaN(budget)||typeof budget!=='number') errorMessage.message='budget of account must be a number'
+  else if(budget<0 || budget>1000000) errorMessage.message='budget of account is too large or too small'
+  if (errorMessage.message) {
+    next(errorMessage)
   }
   else {
     next()
@@ -34,7 +37,7 @@ exports.checkAccountId = async (req, res, next) => {
   try {
     const account = await Account.getById(req.params.id)
     if (account) {
-      req.body = account
+      req.account = account
       next()
     }
     else {
